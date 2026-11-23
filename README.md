@@ -1,4 +1,4 @@
-# Candidates Pipeline
+# Data Engineer Certification by Fullstack
 
 This project contains a Jupyter notebook that reads candidate records from a semicolon-delimited CSV file, loads the data into PostgreSQL, queries candidates who meet the notebook's interview score threshold, and creates charts summarizing hires.
 
