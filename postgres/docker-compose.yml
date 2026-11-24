@@ -1,0 +1,51 @@
+
+# How to run:
+# Open terminal and execute: docker compose up -d
+# Check if it is working: docker compose ps
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: postgres_db
+    restart: unless-stopped
+
+    ports:
+      # Restricts published access to the local machine
+      # Uses port 55432 to avoid conflicts with local PostgreSQL
+      - "127.0.0.1:55432:5432"
+
+    environment:
+      POSTGRES_DB: warehouse
+      POSTGRES_USER: postgres_admin
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    networks:
+      - database_network
+
+    security_opt:
+      # Reduces privilege escalation opportunities
+      - no-new-privileges:true
+
+    healthcheck:
+      # Monitors database availability
+      test:
+      # Executes a command using a shell to check if postgreSQL is
+      # accepting connections based on POSTGRES_USER and POSTGRES_DB
+        - CMD-SHELL
+        - pg_isready -U postgres_admin -d warehouse
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  postgres_data:
+
+networks:
+  database_network:
+    driver: bridge
+    # Isolates the Docker network from external networks
+    internal: true
